@@ -1,0 +1,70 @@
+@media (max-width: 510px) {
+  .h3 {
+    font-size: 17px;
+  }
+}
+
+.p1 {
+  color: white;
+  font-family: "Lucida Console", "Courier New", monospace;
+  text-align: center;
+  color: black;
+  font-weight: bold;
+}
+
+.nav:hover {
+  background-color: red;
+  color: white;
+}
+
+@media (max-width: 490px) {
+  #bu {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  #bu {
+    font-size: 6px;
+  }
+}
+
+#pt {
+  width: 74%;
+  height: auto;
+  float: right;
+  overflow: auto;
+}
+
+#side {
+  width: 25%;
+  height: auto;
+  display: inline-block;
+  text-align: center;
+}
+
+#input {
+  padding-bottom: 30px;
+}
+
+#bu {
+  border: 5px solid white;
+  padding: 12px 50px;
+}
+
+#query {
+  font-size: 18px;
+}
+
+#more button {
+  margin: auto;
+  margin-top: -50px;
+}
+
+.tableexport-caption {
+  display: none;
+}
+
+#pt {
+  color: red;
+}

@@ -1,0 +1,166 @@
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/0.3.2/js/sql.js"
+  integrity="sha512-oPc+qFCHM3DkxsNn2OtJzS3NS8Nkl87XGsOPsJmBYEeQkyEfVaKetewEjOg9le9kAMftoE7Y0WtMtAsko/v4mw=="
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"
+  integrity="sha512-WNLxfP/8cVYL9sj8Jnp6et0BkubLP31jhTG9vhL/F5uEZmg5wEzKoXp1kJslzPQWwPT1eyMiSxlKCgzHLOTOTQ=="
+  crossorigin="anonymous"
+></script>
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/TableExport/5.2.0/js/tableexport.min.js"
+  integrity="sha512-XmZS54be9JGMZjf+zk61JZaLZyjTRgs41JLSmx5QlIP5F+sSGIyzD2eJyxD4K6kGGr7AsVhaitzZ2WTfzpsQzg=="
+  crossorigin="anonymous"
+></script>
+<script>
+  ////display record
+  function handleFiles() {
+    var input = document.getElementById("input");
+    if (input.files.length == 0) {
+      alert("please enter the database file first ");
+    } else {
+      var query = document.getElementById("query").value;
+      var val = document.getElementById("query");
+      var bu = document.getElementById("bu");
+      var file = input.files[0];
+      var reader = new FileReader();
+      reader.onload = function (event) {
+        openSqliteDb(event.target.result, query);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  }
+
+  function openSqliteDb(p, query) {
+    const db = new SQL.Database(new Uint8Array(p));
+    var tables = db.exec(
+      "SELECT * FROM 'sqlite_master' WHERE type='table' OR type='view' ORDER BY name"
+    );
+    var b = [];
+    for (let m = 0; m < tables[0]["values"].length; m++) {
+      b[m] = tables[0]["values"][m][1];
+    }
+    if (query == "") {
+      query = "select * from " + b[0];
+    }
+    //
+    for (let f = 0; f < b.length; f++) {
+      var q = query.toUpperCase();
+      console.log(q);
+      var g = b[f].toUpperCase();
+      console.log(g);
+      var main = q.match(g);
+      if (main == g) {
+        var count = "SELECT COUNT(*) FROM " + b[f];
+        var con1 = db.exec(count);
+        var number = con1[0]["values"][0];
+        document.getElementById("name").innerHTML =
+          "<u>TABLE NAME</u>:   " +
+          b[f] +
+          "(Rows=<span id='bad'></span>/" +
+          number +
+          ")";
+      }
+    }
+    //
+
+    sidebar(b);
+    //query execution
+    try {
+      var con = db.exec(query);
+      console.log(con);
+    } catch (e) {
+      if (e) {
+        document.getElementById("p").innerHTML = "Please enter a valid  query";
+      }
+    }
+    //
+    var arr = [];
+
+    arr.push(
+      "<table class='table' style='overflow: scroll' id='table'><thead class='thead-dark'><tr>"
+    );
+    con.forEach(myfunction);
+    //////////////columns
+    function myfunction(item, index) {
+      for (let i = 0; i < item["columns"].length; i++) {
+        var ans = item["columns"][i];
+        arr.push("<th>" + ans + "</th>");
+      }
+    }
+    arr.push("</tr>");
+
+    //////////////rows
+    for (let j = 0; j < con[0]["values"].length; j++) {
+      arr.push("<tr>");
+      for (let k = 0; k < con[0]["values"][j].length; k++) {
+        arr.push("<td>" + con[0]["values"][j][k] + "</td>");
+      }
+      arr.push("</tr>");
+    }
+    arr.push("</table><br><br>");
+    document.getElementById("p").innerHTML = arr.join("");
+
+    //download  button
+    download();
+    ///download button end
+    var ptable = document.querySelectorAll("#table tr");
+    document.getElementById("bad").innerHTML = ptable.length - 1;
+    var s = document.getElementById("pt");
+    s.style.background = "white";
+    s.style.height = "75vh";
+  }
+
+  //side bar
+  function sidebar(arr) {
+    var arr2 = [];
+    arr2.push(
+      "<table class='table'><thead class='thead-dark'><tr><th>TABLES</th></tr>"
+    );
+    for (let l = 0; l < arr.length; l++) {
+      arr2.push(
+        "<tr><td class='nav' onclick='navclick(" +
+          JSON.stringify(arr[l]) +
+          ")'>" +
+          arr[l] +
+          "</td></tr>"
+      );
+    }
+    arr2.push("</table>");
+    var side = document.getElementById("side");
+    side.style.background = "white";
+    side.style.height = "75vh";
+    document.getElementById("sidebar").innerHTML = arr2.join("");
+  }
+
+  ///side bar function
+  function navclick(ans) {
+    var m = 100;
+    var bu = document.getElementById("bu");
+    var query = "Select * from " + ans + " LIMIT 50";
+
+    document.getElementById("query").value = query;
+    bu.click();
+    document.getElementById("query").value = "";
+    var more = document.getElementById("more");
+    more.innerHTML =
+      "<button type='button' class='btn btn-danger show'>show more</button>";
+    var show = document.getElementsByClassName("show");
+    for (let i = 0; i < show.length; i++) {
+      show[i].onclick = function () {
+        m = m + 50;
+        var query1 = "Select * from " + ans + " LIMIT " + m;
+        document.getElementById("query").value = query1;
+        bu.click();
+        document.getElementById("query").value = "";
+      };
+    }
+  }
+  function download() {
+    document.getElementById("demo").innerHTML =
+      '<caption class="tableexport-caption" style="caption-side: bottom;"><button style="border:3px solid white;color:white" class="btn btn-dark" type="button" tableexport-id="43895a3-csv" class="button-default csv">Export to csv</button><button class="btn btn-dark" style="border:3px solid white;color:white;margin-left:10px" type="button" tableexport-id="52a638d-txt" class="button-default txt">Export to txt</button></caption>';
+    new TableExport(document.getElementById("table"));
+  }
+</script>

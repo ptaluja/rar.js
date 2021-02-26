@@ -1,0 +1,50 @@
+---
+layout: feature
+lang: en
+fileName: alarm-clock
+permalink: /
+---
+
+<link
+  rel="stylesheet"
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/sql.css" />
+<div class="container" style="width: 95%; margin-top: 40px">
+  <br />
+  <input class="form-control" type="file" id="input" /><br />
+  <p class="p1" style="text-align: left; font-size: 20px; color: white">
+    ENTER YOUR QUERY
+  </p>
+  <input type="text" class="form-control" id="query" /><br /><br />
+  <div class="row">
+    <div class="col col-sm-12 col-md-12 col-lg-12">
+      <button
+        id="bu"
+        type="button"
+        class="btn btn-danger"
+        onclick="handleFiles()"
+      >
+        EXECUTE QUERY OR SHOW DATABASE
+      </button>
+      <br /><br />
+      <span id="button"></span>
+      <span id="demo"></span>
+    </div>
+  </div>
+
+  <div id="side">
+    <span id="sidebar"></span>
+  </div>
+  <div id="pt">
+    <h1 class="p1" id="name"></h1>
+    <br />
+    <span id="pttt"></span>
+    <span id="p"></span><br />
+    <span id="more"> </span>
+  </div>
+  <br /><br /><br /><br />
+</div>
+{% include sql.html %}
